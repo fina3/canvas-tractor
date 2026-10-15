@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../popup.css">
+</head>
+<body>
+  <header>
+    <div class="title">Canvas Agenda</div>
+    <div class="head-actions">
+      <button id="undo" class="icon-btn" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a4.5 4.5 0 0 1 0 9h-5"/><polyline points="8 5 4 9 8 13"/></svg></button>
+      <button id="redo" class="icon-btn" title="Redo (Cmd/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9H9a4.5 4.5 0 0 0 0 9h5"/><polyline points="16 5 20 9 16 13"/></svg></button>
+      <button id="refresh" class="icon-btn" title="Refresh">&#8635;</button>
+      <button id="settings" class="icon-btn" title="Settings">&#9881;</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="due">Due <span class="count" id="due-count"></span></button>
+    <button class="tab" data-tab="ann">Announcements <span class="count" id="ann-count"></span></button>
+    <button class="tab" data-tab="notes">Notes</button>
+    <button class="tab minor" data-tab="bin">Bin</button>
+  </nav>
+
+  <div id="status" class="status hidden"></div>
+
+  <main>
+    <section id="pane-due" class="pane">
+      <div class="filter due-bar">
+        <button id="add-event" class="link" aria-expanded="false">+ Add a deadline</button>
+        <span class="hint">Anything Canvas doesn&rsquo;t know about &mdash; a Gradescope due date, an exam.</span>
+      </div>
+      <form id="event-form" class="event-form hidden">
+        <input id="event-title" type="text" maxlength="120" placeholder="What is due?" autocomplete="off">
+        <div class="event-line">
+          <input id="event-when" type="datetime-local">
+          <input id="event-course" type="text" maxlength="60" placeholder="Course (optional)" autocomplete="off">
+        </div>
+        <div class="event-line">
+          <select id="event-repeat" aria-label="How often it repeats">
+            <option value="none">Once</option>
+            <option value="daily">Every day</option>
+            <option value="weekly">Every week</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="monthly">Every month</option>
+          </select>
+          <label id="event-until-wrap" class="event-until hidden">
+            until <input id="event-until" type="date" aria-label="Repeat until">
+          </label>
+        </div>
+        <div class="event-foot" id="event-foot">
+          <span id="event-error" class="event-error"></span>
+          <button type="button" id="event-cancel" class="link">Cancel</button>
+          <button type="submit" id="event-save" class="btn">Add</button>
+        </div>
+        <div class="event-scope hidden" id="event-scope">
+          <span class="event-scope-q" id="event-scope-q">Change just this one, or all of them?</span>
+          <div class="event-scope-buttons">
+            <button type="button" id="scope-cancel" class="link">Cancel</button>
+            <button type="button" id="scope-one" class="btn ghost">Just this one</button>
+            <button type="button" id="scope-all" class="btn">All of them</button>
+          </div>
+        </div>
+      </form>
+      <div id="due-list"></div>
+    </section>
+    <section id="pane-ann" class="pane hidden">
+      <label class="filter">
+        <input type="checkbox" id="important-only"> Important only
+        <span class="hint">(cancellations, exams, deadline changes)</span>
+      </label>
+      <div id="ann-list"></div>
+    </section>
+    <section id="pane-notes" class="pane hidden">
+      <textarea id="note" spellcheck="true"
+        placeholder="A scratchpad — reading to catch up on, what to ask in office hours, exam dates."></textarea>
+      <div class="note-foot"><span id="note-status"></span></div>
+    </section>
+    <section id="pane-bin" class="pane hidden">
+      <div class="filter bin-bar">
+        <span class="hint" id="bin-note">Dismissed announcements. Restore any of them.</span>
+        <button id="empty-bin" class="link" disabled>Empty bin</button>
+      </div>
+      <div id="bin-list"></div>
+    </section>
+  </main>
+
+  <footer><span id="stamp"></span></footer>
+  <script type="module" src="./mocks.js"></script>
+  <script type="module" src="../popup.js"></script>
+  <script type="module" src="./scenario.js"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+:root {
+  /* Lets native controls (checkboxes, scrollbars) follow the theme instead of
+     staying stark white on the dark palette below. */
+  color-scheme: light dark;
+  --bg: #ffffff; --fg: #16181d; --muted: #676b75; --line: #e3e5ea;
+  --accent: #d0302a; --chip: #f1f2f5; --hover: #f7f8fa;
+  --hi: #d0302a; --mid: #b26a00; --star: #b8860b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191b1f; --fg: #e9eaee; --muted: #9a9ea8; --line: #2e3238;
+    --accent: #ff6b60; --chip: #24272c; --hover: #212429;
+    --hi: #ff6b60; --mid: #e0a33a; --star: #e6c14b;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; width: 420px; max-height: 580px; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--fg);
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+}
+.title { font-weight: 650; font-size: 14px; }
+.head-actions { display: flex; gap: 2px; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: 0; color: var(--muted); cursor: pointer;
+  font-size: 15px; padding: 4px 7px; border-radius: 6px; line-height: 1;
+}
+/* The undo/redo arrows are SVG: the ↶ / ↷ glyphs render as a tall vertical
+   stroke, and differently again depending on which font gets picked. */
+.icon-btn svg { display: block; }
+.icon-btn:hover:not(:disabled) { background: var(--hover); color: var(--fg); }
+.icon-btn:disabled { opacity: .3; cursor: default; }
+.icon-btn.spin { animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.tabs { display: flex; border-bottom: 1px solid var(--line); }
+.tab {
+  /* Sized to their label, then sharing what's left: a hard 1/n split makes
+     "Announcements" wrap onto a second line once there are four tabs. */
+  flex: 1 1 auto; min-width: 0; white-space: nowrap;
+  background: none; border: 0; border-bottom: 2px solid transparent;
+  color: var(--muted); cursor: pointer; padding: 9px 6px; font-size: 12.5px;
+  font-weight: 550; font-family: inherit;
+}
+.tab:hover { background: var(--hover); }
+.tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+.count {
+  display: inline-block; min-width: 17px; padding: 1px 5px; margin-left: 4px;
+  border-radius: 9px; background: var(--chip); color: var(--muted); font-size: 11px;
+}
+/* The bin is somewhere to recover from, not a third list worth equal billing:
+   it shrinks to its label and sits off to the side instead of taking a third
+   of the tab bar. */
+.tab.minor {
+  flex: 0 0 auto; padding: 9px 11px; font-size: 11.5px; font-weight: 500;
+  color: var(--muted); opacity: .8;
+}
+.tab.minor:hover { opacity: 1; }
+.tab.minor.active { opacity: 1; font-weight: 550; }
+
+main { overflow-y: auto; flex: 1; }
+.pane { padding: 6px 0 10px; }
+.hidden { display: none !important; }
+
+.status { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--line); }
+.status.error { color: var(--hi); }
+.status a { color: var(--accent); }
+
+.filter {
+  display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+  border-bottom: 1px solid var(--line); font-size: 12px; cursor: pointer; user-select: none;
+}
+.filter .hint { color: var(--muted); font-size: 11px; }
+.bin-bar { justify-content: space-between; cursor: default; padding: 5px 12px; }
+.bin-bar .link { font-size: 11px; }
+
+.row { padding: 9px 12px; border-bottom: 1px solid var(--line); display: block; }
+.row:hover { background: var(--hover); }
+.row:last-child { border-bottom: 0; }
+.row-top { display: flex; align-items: baseline; gap: 6px; }
+/* Room along the bottom for the ✕ / ↩ in the corner, so nothing sits under it. */
+.row.ann { cursor: pointer; position: relative; padding-bottom: 26px; }
+.row.ann > .x-btn { position: absolute; right: 9px; bottom: 5px; font-size: 12px; }
+.chev {
+  display: inline-block; color: var(--muted); font-size: 9px; line-height: 1;
+  width: 9px; flex: none;
+  transition: transform .12s ease; transform-origin: 50% 50%;
+}
+.row.open .chev { transform: rotate(90deg); }
+.row-tools { display: flex; align-items: center; gap: 2px; flex: none; }
+.body {
+  margin-top: 6px; padding: 8px 10px; border-radius: 6px; background: var(--chip);
+  font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.body .open-link { display: inline-block; margin-top: 6px; color: var(--accent); font-size: 11.5px; }
+.name { font-weight: 550; flex: 1; }
+.name a { color: inherit; text-decoration: none; }
+.name a:hover { text-decoration: underline; }
+.meta { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+.snippet { color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+.due { font-variant-numeric: tabular-nums; font-size: 11.5px; white-space: nowrap; }
+.due.soon { color: var(--hi); font-weight: 600; }
+.due.near { color: var(--mid); }
+.pill {
+  display: inline-block; padding: 1px 6px; border-radius: 4px; background: var(--chip);
+  color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .3px; margin-right: 4px;
+}
+.pill.p-hi { background: var(--hi); color: #fff; }
+.pill.p-star { background: var(--star); color: #191b1f; }
+.star-btn {
+  background: none; border: 0; cursor: pointer; color: var(--muted);
+  font-size: 14px; padding: 0 2px; line-height: 1;
+}
+.star-btn.on { color: var(--star); }
+.x-btn {
+  background: none; border: 0; cursor: pointer; color: var(--muted);
+  font-size: 13px; padding: 0 3px; line-height: 1; border-radius: 4px;
+}
+.x-btn:hover { color: var(--hi); background: var(--hover); }
+.row.binned { opacity: .8; }
+.row.binned .name { font-weight: 500; }
+/* Strike the title only: running a line through the course and due date too
+   makes the whole row hard to read. */
+.done { opacity: .55; }
+.done .name { text-decoration: line-through; }
+.empty { padding: 26px 14px; text-align: center; color: var(--muted); font-size: 12px; }
+
+footer {
+  padding: 6px 12px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 10.5px; text-align: right;
+}
+button.link {
+  background: none; border: 0; color: var(--accent); cursor: pointer;
+  font: inherit; text-decoration: underline; padding: 0;
+}
+button.link:disabled { color: var(--muted); text-decoration: none; cursor: default; opacity: .55; }
+.kw { font-weight: 700; color: var(--fg); }
+.snippet .kw { color: var(--fg); }
+.count:empty { display: none; }
+
+/* ---- Due: This week / Next week / Later / Done folding sections --------- */
+.group { border-bottom: 1px solid var(--line); }
+.group:last-child { border-bottom: 0; }
+.group-head {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  background: none; border: 0; cursor: pointer; font: inherit; color: var(--muted);
+  padding: 7px 12px; text-align: left;
+}
+.group-head:hover { background: var(--hover); color: var(--fg); }
+.group-head .chev { transition: transform .12s ease; }
+.group-head.open .chev { transform: rotate(90deg); }
+.group-label {
+  font-size: 11px; font-weight: 650; letter-spacing: .5px; text-transform: uppercase;
+}
+.group-head .count { margin-left: auto; }
+.group-body .row { padding-left: 12px; }
+.group-body .empty { padding: 14px 12px; text-align: left; }
+.check {
+  flex: none; margin: 0 2px 0 0; width: 13px; height: 13px;
+  accent-color: var(--accent); cursor: pointer;
+}
+.check:disabled { cursor: default; opacity: .55; }
+
+/* ---- Notes --------------------------------------------------------------- */
+#pane-notes { display: flex; flex-direction: column; height: 100%; padding: 0; }
+#note {
+  flex: 1; min-height: 300px; resize: none; border: 0; outline: none;
+  padding: 11px 12px; background: var(--bg); color: var(--fg);
+  font: inherit; line-height: 1.55;
+}
+#note::placeholder { color: var(--muted); }
+.note-foot {
+  padding: 3px 12px 7px; min-height: 15px; text-align: right;
+  color: var(--muted); font-size: 10.5px;
+}
+
+/* ---- Due: hand-added deadlines ------------------------------------------- */
+.due-bar { justify-content: flex-start; gap: 8px; cursor: default; padding: 5px 12px; }
+.due-bar .link { font-size: 11.5px; flex: none; }
+/* The hint explains what the button is for, but must not push it around or
+   wrap the bar onto a second line in a 420px popup. */
+.due-bar .hint { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-form {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 9px 12px 10px; border-bottom: 1px solid var(--line); background: var(--hover);
+}
+.event-line { display: flex; gap: 6px; }
+.event-form input {
+  flex: 1; min-width: 0; font: inherit; font-size: 12.5px; color: var(--fg);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px;
+}
+.event-form select {
+  font: inherit; font-size: 12.5px; color: var(--fg); cursor: pointer;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px;
+}
+.event-form input:focus, .event-form select:focus { outline: none; border-color: var(--accent); }
+/* "until <date>" reads as one control, and only appears once something repeats. */
+.event-until {
+  display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;
+  color: var(--muted); font-size: 11.5px;
+}
+.event-form input::placeholder { color: var(--muted); }
+.event-foot { display: flex; align-items: center; gap: 10px; }
+.event-foot .link { font-size: 11.5px; }
+.event-foot #event-cancel { margin-left: auto; }
+.event-error { color: var(--hi); font-size: 11px; flex: 1; min-width: 0; }
+.btn {
+  font: inherit; font-size: 12px; font-weight: 550; cursor: pointer;
+  background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 5px 12px;
+}
+.btn:hover { filter: brightness(1.08); }
+/* The control on a hand-added row sits at the end of the line, past the countdown. */
+.row-top > .x-btn { flex: none; align-self: center; }
+.meta .pill { vertical-align: baseline; }
+
+/* ---- Due: the ⋯ menu on a hand-added deadline ---------------------------- */
+.menu-wrap { position: relative; flex: none; align-self: center; }
+.menu-btn { font-size: 15px; letter-spacing: 1px; }
+.menu {
+  position: absolute; right: 0; top: 100%; z-index: 5; min-width: 190px;
+  display: flex; flex-direction: column; padding: 4px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+}
+.menu.up { top: auto; bottom: 100%; }
+.menu-item {
+  background: none; border: 0; cursor: pointer; font: inherit; font-size: 12px;
+  color: var(--fg); text-align: left; padding: 6px 9px; border-radius: 5px; white-space: nowrap;
+}
+.menu-item:hover { background: var(--hover); }
+.menu-item.danger { color: var(--hi); }
+
+/* ---- Due: "just this one, or all of them?" ------------------------------- */
+.event-scope { display: flex; flex-direction: column; gap: 7px; }
+.event-scope-q { font-size: 12px; }
+.event-scope-buttons { display: flex; align-items: center; gap: 7px; }
+.event-scope-buttons .link { margin-right: auto; font-size: 11.5px; }
+.btn.ghost { background: none; color: var(--fg); border: 1px solid var(--line); }
+.btn.ghost:hover { background: var(--bg); filter: none; border-color: var(--accent); }

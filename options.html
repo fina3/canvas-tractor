@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Canvas Agenda — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <h1>Canvas Agenda</h1>
+
+  <section>
+    <h2>Connection</h2>
+    <label for="base">Canvas URL</label>
+    <input id="base" type="text" placeholder="https://yourschool.instructure.com" spellcheck="false">
+    <p class="help">The address you normally log in at, e.g. <code>https://bcourses.berkeley.edu</code>.</p>
+
+    <label for="token">Access token</label>
+    <input id="token" type="password" placeholder="paste token" spellcheck="false">
+    <p class="help">
+      Canvas → <strong>Account</strong> → <strong>Settings</strong> → <em>Approved Integrations</em>
+      → <strong>+ New Access Token</strong>. Stored only in this browser profile
+      (<code>chrome.storage.local</code>); it is never sent anywhere but your Canvas server.
+    </p>
+
+    <div class="actions">
+      <button id="save" class="primary">Grant access &amp; save</button>
+      <button id="test">Test connection</button>
+    </div>
+    <div id="msg" class="msg hidden"></div>
+  </section>
+
+  <section>
+    <h2>Gradescope</h2>
+    <p class="help">Some courses hand work in through Gradescope, which Canvas never hears about.
+      This reads the same pages you do, using the session you are already signed into — there is
+      no password to enter and no API key. Nothing leaves this browser.</p>
+    <label class="check"><input type="checkbox" id="gs-on">
+      Also show upcoming Gradescope deadlines</label>
+    <div class="actions">
+      <button id="gs-grant" class="primary">Grant access to gradescope.com</button>
+      <button id="gs-test">Test</button>
+    </div>
+    <div id="gs-msg" class="msg hidden"></div>
+    <p class="help">Gradescope has no public API, so this depends on the layout of their pages.
+      If they change it, the popup will say it could not read Gradescope rather than quietly
+      showing you an empty list.</p>
+  </section>
+
+  <section>
+    <h2>Badge</h2>
+    <label class="check"><input type="checkbox" id="badge-on" checked>
+      Show a count of important announcements on the toolbar icon</label>
+    <label for="interval">Check every</label>
+    <select id="interval">
+      <option value="15">15 minutes</option>
+      <option value="30" selected>30 minutes</option>
+      <option value="60">hour</option>
+      <option value="180">3 hours</option>
+    </select>
+  </section>
+
+  <section>
+    <h2>Starred announcements</h2>
+    <p class="help">Canvas has no star feature, so these are kept locally. Starred items always
+      rank as important.</p>
+    <div id="stars"></div>
+  </section>
+
+  <section>
+    <h2>How ranking works</h2>
+    <p class="help">Each announcement is scored on keywords. A match in the title counts full;
+      a match only in the body counts 60%. Pinned adds 30, unread adds 5, starred adds 1000.
+      “Important only” shows anything scoring 75 or above.</p>
+    <table id="rules"></table>
+  </section>
+</main>
+<script type="module" src="options.js"></script>
+</body>
+</html>
